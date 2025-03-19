@@ -25,6 +25,7 @@ public class KafkaConsumerConfig {
     @Bean
     public ConsumerFactory<String, String> consumerFactory(KafkaProperties kafkaProperties) {
         Map<String, Object> consumerProps = kafkaProperties.buildConsumerProperties(null);
+        consumerProps.put("isolation.leve", "read_committed");
         return new DefaultKafkaConsumerFactory<>(consumerProps);
     }
 

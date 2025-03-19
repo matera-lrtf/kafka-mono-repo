@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class KafkaMessageConsumer {
@@ -21,7 +22,7 @@ public class KafkaMessageConsumer {
     @Autowired
     private KafkaMessageProducer kafkaMessageProducer;
 
-
+    @Transactional
     @KafkaListener(topics = "processo", groupId = "${spring.kafka.consumer.group-id}")
     public void consumer(String message) {
         logger.info("Consumed message: {}", message);
@@ -39,10 +40,16 @@ public class KafkaMessageConsumer {
                     String outMessage = String.format("{\"nomeProcesso\": \"BLA\", \"idEntidade\": %d }", i);
                     batchMessages.add(outMessage);
 
+                    if(i == 6) {
+                        throw  new RuntimeException();
+                    }
+
                     if (batchMessages.size() >= batchSize) {
                         kafkaMessageProducer.sendBatchMessage("entidade", batchMessages);
                         batchMessages.clear();
                     }
+
+
                 }
 
                 if (!batchMessages.isEmpty()) {
