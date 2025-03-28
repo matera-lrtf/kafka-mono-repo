@@ -1,0 +1,26 @@
+{
+  "name": "postgresql-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "database.hostname": "postgres-db",
+    "database.port": "5432",
+    "database.user": "postgres",
+    "database.password": "postgres",
+    "database.dbname": "processos",
+    "database.server.name": "dbserver1",
+    "topic.prefix": "postgres",
+    "table.include.list": "public.entidade_outbox",
+    "plugin.name": "pgoutput",
+    "slot.name": "debezium_slot",
+    "publication.name": "dbz_publication",
+    "transforms": "outbox",
+    "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",
+    "transforms.outbox.table.field.event.id": "id",
+    "transforms.outbox.table.field.event.key": "id",
+    "transforms.outbox.table.field.event.payload": "payload",
+    "transforms.outbox.table.fields.additional.placement": "nome:header,nome_processo:header,data_hora_inicio:header",
+    "transforms.outbox.route.by.field": "nome_processo",
+    "transforms.outbox.route.topic.replacement": "teste_processo",
+    "tombstones.on.delete": "false"
+  }
+}

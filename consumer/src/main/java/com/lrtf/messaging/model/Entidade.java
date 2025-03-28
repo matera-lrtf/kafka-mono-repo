@@ -24,11 +24,10 @@ public class Entidade implements Serializable {
     public Entidade() {
     }
 
-    public Entidade(UUID id, String nome, String nomeProcesso, LocalDateTime dataHoraInicio) {
-        this.id = id;
+    public Entidade(String nome, String nomeProcesso) {
         this.nome = nome;
         this.nomeProcesso = nomeProcesso;
-        this.dataHoraInicio = dataHoraInicio;
+        this.dataHoraInicio = LocalDateTime.now();
     }
 
     public UUID getId() {

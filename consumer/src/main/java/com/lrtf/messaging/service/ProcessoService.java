@@ -1,7 +1,6 @@
 package com.lrtf.messaging.service;
 
 import com.lrtf.messaging.model.Entidade;
-import com.lrtf.messaging.model.Processo;
 import com.lrtf.messaging.model.EntidadeOutbox;
 import com.lrtf.messaging.repository.EntidadeOutboxRepository;
 import com.lrtf.messaging.repository.EntidadeRepository;
@@ -11,7 +10,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Service
+@Transactional(transactionManager = "transactionManager")
 public class ProcessoService {
 
     private static final Logger logger = LoggerFactory.getLogger(ProcessoService.class);
@@ -19,15 +22,13 @@ public class ProcessoService {
     private final EntidadeRepository entidadeRepository;
     private final EntidadeOutboxRepository entidadeOutboxRepository;
 
-    private ProcessoService(
-        EntidadeRepository processoRepository,
-        EntidadeOutboxRepository processoOutboxRepository) {
-
-        this.entidadeRepository = processoRepository;
-        this.entidadeOutboxRepository = processoOutboxRepository;
+    public ProcessoService(EntidadeRepository entidadeRepository, 
+                         EntidadeOutboxRepository entidadeOutboxRepository) {
+        this.entidadeRepository = entidadeRepository;
+        this.entidadeOutboxRepository = entidadeOutboxRepository;
     }
 
-    @Transactional
+    @Transactional(transactionManager = "transactionManager")
     public void salvar(Entidade entidade) {
         logger.info("Salvando entidade {}", entidade);
         Entidade novaEntidade = entidadeRepository.save(entidade);
@@ -40,7 +41,7 @@ public class ProcessoService {
         logger.info("Entidade salva com sucesso");
     }
 
-    @Transactional
+    @Transactional(transactionManager = "transactionManager")
     public void salvar(List<Entidade> entidades) {
 
         logger.info("Salvando {} entidades: ", entidades.size());
@@ -53,6 +54,28 @@ public class ProcessoService {
         entidadeOutboxRepository.saveAll(entidadesOutbox);
 
         logger.info("Processo salvo com sucesso");
+    }
+
+    public void processarEntidade(String nomeProcesso, int numeroEntidade) {
+        logger.info("Processando entidade {} do processo {}", numeroEntidade, nomeProcesso);
+        
+        // Criar nova entidade
+        Entidade entidade = new Entidade(
+            "Entidade " + numeroEntidade,
+            nomeProcesso
+        );
+
+        // Salvar entidade
+        entidade = entidadeRepository.save(entidade);
+        logger.info("Entidade salva com ID: {}", entidade.getId());
+        
+        // Criar e salvar entidade outbox
+        EntidadeOutbox entidadeOutbox = new EntidadeOutbox();
+        entidadeOutbox.converteEntidade(entidade);
+        
+        entidadeOutboxRepository.save(entidadeOutbox);
+        
+        logger.info("Entidade {} processada com sucesso", entidade.getId());
     }
 
 }

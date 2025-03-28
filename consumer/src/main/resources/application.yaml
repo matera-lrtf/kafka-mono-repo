@@ -12,12 +12,16 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       auto-offset-reset: earliest
+      isolation-level: read_committed
   
   datasource:
     url: jdbc:postgresql://localhost:5432/processos
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
   
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -27,9 +31,12 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: update
+    open-in-view: false
 
 # Opcional: configura��es de logging para debug
 logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.transaction: DEBUG
+    org.springframework.orm.jpa: DEBUG
