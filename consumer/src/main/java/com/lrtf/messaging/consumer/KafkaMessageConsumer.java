@@ -41,9 +41,9 @@ public class KafkaMessageConsumer {
                         processoService.processarEntidade(nomeProcesso, i);
                         
                         // Simular erro na sexta entidade
-//                        if (i == 6) {
-//                            throw new RuntimeException("Erro simulado na entidade 6");
-//                        }
+                        if (i == 6) {
+                            throw new RuntimeException("Erro simulado na entidade 6");
+                        }
                     } catch (Exception e) {
                         logger.error("Erro ao processar entidade {}: {}", i, e.getMessage());
                         throw e; // Propagar erro para fazer rollback da transação
